@@ -3,7 +3,7 @@
 %%         underlying details of the comms protocol.
 
 -module(client).
--export([ls/1, get_file/2, put_file/2]).
+-export([ls/1, getc_file/2, get_file/2, putc_file/2]).
 
 ls(Server) ->
     Server ! {self(), list_dir},
@@ -12,16 +12,27 @@ ls(Server) ->
             FileList
     end.
 
-get_file(Server, File) ->
-    Server ! {self(), {get_file, File}},
+% Read contents of file.
+getc_file(Server, File) ->
+    Server ! {self(), {getc_file, File}},
     receive
         {Server, Content} ->
             Content
     end.
 
-put_file(Server, File) ->
-    Server ! {self(), {put_file, File}},
+get_file(Server, File) ->
+    Server ! {self(), {get_file, File}},
     receive
         {Server, Status} ->
             Status
+    end.
+
+putc_file(Server, File) ->
+    {ok, Binary} = file:read_file(File),
+    Server ! {self(), {putc_file, File, Binary}},
+    receive
+        {Server, ok} ->
+            ls(Server);
+        {Server, {error, Reason}} ->
+            Reason
     end.

@@ -10,12 +10,15 @@ loop(Dir) ->
     receive
         {Client, list_dir} ->
             Client ! {self(), file:list_dir(Dir)};
-        {Client, {get_file, File}} ->
+        {Client, {getc_file, File}} ->
             Full = filename:join(Dir, File),
             Client ! {self(), file:read_file(Full)};
-        {Client, {put_file, File}} ->
+        {Client, {get_file, File}} ->
             Source      = filename:absname(File),
             Destination = filename:join(Dir, filename:basename(File)),
-            Client ! {self(), file:copy(Source, Destination)}
+            Client ! {self(), file:copy(Source, Destination)};
+        {Client, {putc_file, File, Binary}} ->
+            Full = filename:join(Dir, File),
+            Client ! {self(), file:write_file(Full, Binary)}
     end,
     loop(Dir).
