@@ -12,7 +12,7 @@ ls(Server) ->
             FileList
     end.
 
-% Read contents of file.
+% Read contents of File.
 getc_file(Server, File) ->
     Server ! {self(), {getc_file, File}},
     receive
@@ -20,6 +20,7 @@ getc_file(Server, File) ->
             Content
     end.
 
+% Get copy of a file to place in Server directory.
 get_file(Server, File) ->
     Server ! {self(), {get_file, File}},
     receive
@@ -27,6 +28,7 @@ get_file(Server, File) ->
             Status
     end.
 
+% Write content to File.
 putc_file(Server, File) ->
     {ok, Binary} = file:read_file(File),
     Server ! {self(), {putc_file, File, Binary}},
