@@ -9,7 +9,9 @@ ls(Server) ->
     Server ! {self(), list_dir},
     receive
         {Server, FileList} ->
-            FileList
+            FileList;
+        {Server, {error, Reason}} ->
+            Reason
     end.
 
 % Read contents of File.
@@ -17,7 +19,9 @@ getc_file(Server, File) ->
     Server ! {self(), {getc_file, File}},
     receive
         {Server, Content} ->
-            Content
+            Content;
+        {Server, {error, Reason}} ->
+            Reason
     end.
 
 % Get copy of a file to place in Server directory.
@@ -25,7 +29,9 @@ get_file(Server, File) ->
     Server ! {self(), {get_file, File}},
     receive
         {Server, Status} ->
-            Status
+            Status;
+        {Server, {error, Reason}} ->
+            Reason
     end.
 
 % Write content to File.
